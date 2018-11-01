@@ -44,21 +44,57 @@ public class PostfixEvaluator {
 		// Using a stack makes it very simple to evaluate the
 		// arithmetic expression.
 		// See http://docs.oracle.com/javase/8/docs/api/java/util/Stack.html
-		
+
 		// Use the Scanner to get the elements (tokens) in the
 		// arithmetic expression.
-		
+		double x, y, result=0;
+
 		Scanner scanner = new Scanner(arithmeticExpr);
-		Token currToken = scanner.getToken();
-		
+		Stack<Token> exp = new Stack<>();
+		while(!scanner.isEmpty()) {
+            Token currToken = scanner.getToken();
+		    if(currToken.isDouble()){
+		        exp.push(currToken);
+            }
+            else { // if the token is an operator
+                //check is there is a number to subtract from
+                if(exp.isEmpty()) { throw new MalformedExpressionException("hello???"); }
+                else {
+                    y = exp.pop().getValue();
+                    if(exp.isEmpty()) {throw new MalformedExpressionException("hello again??"); }
+                    else {
+                        x = exp.pop().getValue();
+                    }
+                }
+                if(currToken.equals("+")) {
+                    exp.push(new Token(x + y));
+                }
+                else if(currToken.equals("-")) {
+                    exp.push(new Token(x - y));
+                }
+                else if(currToken.equals("*")) {
+                    exp.push(new Token(x * y));
+                }
+                else if(currToken.equals("/")) {
+                    exp.push(new Token(x / y));
+                }
+                else {
+                    throw new MalformedExpressionException("invalid operator fam");
+                }
+            }
+            scanner.eatToken();
+		}
+		result = exp.pop().getValue();
+		if (!exp.isEmpty()) { throw new MalformedExpressionException("too many operators dude"); }
+		else {
+		    return result;
+        }
 		// now process the token, etc.
 		// You should read the implementation of the Token class
 		// to determine what methods you can and should use.
 		
 		// It is sufficient to support the four basic operations:
 		// addition, subtraction, multiplication & division.
-		
-		return 0.0;
 	}
 	
 }
